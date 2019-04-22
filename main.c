@@ -9,9 +9,11 @@ void rotation_decryption(void);
 void substitution_encryption(void);
 void substitution_decryption(void);
 void rotation_decryption_of_unknown(void);
+int maximum_element_location(char *str);
+int counting_phrases(char *str, int x, char *word);
 
 int main() {
-    int menu_select = 2;
+    int menu_select = 5;
     switch (menu_select) {
         case 1: rotation_encryption(); break; //performs rotation encryption of a known message. Needs a key
         case 2: rotation_decryption(); break; //performs rotation decryption of a given encrypted message. Needs a known key
@@ -25,45 +27,21 @@ int main() {
 
 //Encryption of known message using rotation encryption    
 void rotation_encryption(void){
-    char str[] = "This is a message.";
+    char str[] = "This is a message";
     int x = (int) strlen(str);
-    int i; //string counter
     int y = 5; // 'key' value. Amount the message is rotated by
     convert_case(str); //converts lowercase to uppercase    
-    for(i = 0; i < x; i++){ //i.e executes for all elements of the string
-        if(str[i]<91 && str[i]>64){ //if the string element lies in this range it is an uppercase letter and needs to be encrypted 
-            str[i] = str[i] - 65; /*To perform encryption we need a number between 0 and 25, the ASCII of each uppercase letter minus 65 
-                                    gives a number between 0 and 25*/
-        }    
-    }
-    e(str, y, x); //encryption function, see below for definition and description
-    for(i = 0; i < x; i++){ // Returns string elements to values between 65 and 90, so when printf'd it prints letters
-        if(str[i]<26 && str[i]>(-1)){
-            str[i] = str[i] + 65;
-        }
-    }   
+    e(str, y, x); //encryption function, see below for definition and description   
     printf("%s\n", str); // Prints string (which is now encrypted) to stdout 
 }
 
 //Decryption of known message using rotation decryption
 void rotation_decryption(void){
     char cipher_text[] = "SJSFMPCRM WG O USBWIG. PIH WT MCI XIRUS O TWGV PM WHG OPWZWHM HC QZWAP O HFSS, WH KWZZ ZWJS WHG KVCZS ZWTS PSZWSJWBU HVOH WH WG GHIDWR. - OZPSFH SWBGHSWB";
-    int i = 0; //string counter
     int y = 14; //key value, i.e amount the encrypted message has been rotated by
     int x = (int) strlen(cipher_text);
     convert_case(cipher_text); //converts form lowercase to uppercase
-    for(i = 0; i < x; i++){ //i.e executes for all elements of the string cipher_text
-        if(cipher_text[i]<91 && cipher_text[i]>64){ //if the string element lies in this range it is an uppercase letter and needs to be encrypted 
-            cipher_text[i] = cipher_text[i] - 65; /*To perform encryption we need a number between 0 and 25, the ASCII of each uppercase letter minus 65 
-                                                    gives a number between 0 and 25*/
-        }
-    }
     d(cipher_text, y, x); //decryption function, see below for definition and description
-    for(i = 0; i < x; i++){ // Returns cipher_text to values between 65 and 90, so when printf'd it prints letter
-        if(cipher_text[i]<26 && cipher_text[i]>(-1)){
-            cipher_text[i] = cipher_text[i] + 65;
-        }
-    } 
     printf("%s\n", cipher_text); //Prints cipher_text (which is now decrypted) to stdout
 }
 
@@ -113,6 +91,35 @@ void substitution_decryption(void) {
     printf("%s\n", cipher_text); //prints decrypted message to stdout
 }
 
+void rotation_decryption_of_unknown(void) {
+    char cipher_text[] = "YMNX NX F RJXXFLJ"; //Unknown encrypted text
+    int x = (int) strlen(cipher_text); //Return the length of a string (excluding the '\0') and assigns to x
+    int y = 0; // Rotation amount, changed further down code
+    char word_count[26]; //Array will be used to record the word count of the words below
+    convert_case(cipher_text); //converts form lowercase to uppercase (If needed)
+    for(y = 0; y <= 25; y++) { // i.e for all rotation amounts (as there is only 25 possible rotations)
+        d(cipher_text, y, x); //decryption function, see below for definition and description
+        char the[] = " THE "; //6 Chars are the 6 words we are looking for in our decrypted text. Spaces are important as they help the compiler...
+        char it[] = " IT "; //...recognise when the word 'THE' is by itself (i.e not apart of another word)
+        char and[] = " AND ";
+        char of[] = " OF "; //These words are all some of the most common words in the English Language 
+        char is[] = " IS ";
+        char to[] = " TO ";
+        word_count[y] = counting_phrases(cipher_text, x, the) + counting_phrases(cipher_text, x, it) + counting_phrases(cipher_text, x, and) + counting_phrases(cipher_text, x, of) + counting_phrases(cipher_text, x, is) + counting_phrases(cipher_text, x, to);
+        /* Above line: counting_phrases (see function definition below) counts the occurence of each word in the 'decrypted' string. The sum of the occurence
+        of each word is taken and assigned to the element of array word_count corresponding to the rotation amount where each occurence was recorded */
+        e(cipher_text, y, x); //Encryption function, see function definition and description below
+    }
+    y = maximum_element_location(word_count); /*The maximum element of word_count tells us which rotation returns a decryption with the most of these 6 words, 
+                                                and it can be inferred that this rotation (i.e y) will give the full decryption of the text*/
+    if(y >= 1){ //i.e if the rotation is anything but a rotation by 0 )staying the same
+        d(cipher_text, y, x);
+        printf("%s\n", cipher_text); //Prints cipher_text (which is now decrypted) to stdout
+    } else { // Executes if none of these words are found in the text
+        printf("None of these words appear in this text.");
+    }
+}
+
 /*Definition for function that converts the case of the message. For every element of the string
 that has a ASCII value betweeen 96 and 123 (i.e the ASCII Values of lowercase letters) it takes
 away 32, leaving values within the range of 65 to 90 (i.e the ASCII values of uppercase letters)
@@ -129,53 +136,97 @@ void convert_case(char *str){
     return;
 } 
 
-/*Definition for the function that performs rotation encryption. For each element of the string it 
-adds the rotation amount and takes this value modulus 26. This returns the element value + rotation
-amount if this is less than 26 or returns the remainder of (element value + rotation amount) divided
-by 26 if the element value + roatation amount is greater than 26. This only encrypts letters as other 
-symbols (numbers, punctuation, white space) are outside the range of -1 to 26*/
+/*Definition for the function that performs rotation encryption. The function arguments are a pointer to the string containing the message to be encrypted,
+int y which is the rotation amount and int x which is the length of the string containing the message. For each element of the string, 65 is taken away
+from the element (which has an ASCII value from 65 to 90) to give a value between 0 and 25 which is required to perform the actual encryption. Then, the 
+rotation amoount (y) is added to each element and the modulus 26 is taken. This returns the element value + rotation amount if this is less than 26 or 
+returns the remainder of (element value + rotation amount) divided by 26 if the element value + roatation amount is greater than 26. This only encrypts 
+letters as other symbols (numbers, punctuation, white space) are outside the range of -1 to 26. Finally 65 is added back to each of the strings elements
+to return their values to ones between 65 and 90 so that each element of the string corresponds to the ASCII values of the uppercase letters. This 
+function returns void, but alters the string, given as a pointer in the argument of the function, effectively returning the encrypted string*/
 void e(char *str, int y, int x){
     int i=0; //String counter
-    for(i = 0; i < x; i++){
+    for(i = 0; i < x; i++){ //i.e executes for all elements of the string
+        if(str[i]<91 && str[i]>64){ //if the string element lies in this range it is an uppercase letter and needs to be encrypted 
+            str[i] = str[i] - 65;
+        }    
+    }
+    for(i = 0; i < x; i++){ // Encryption mathematics 
         if(str[i]>(-1) && str[i]<26){
             str[i] = (str[i] + y) % 26;
         }
     }
+    for(i = 0; i < x; i++){ // Returns string elements to values between 65 and 90, so when printf'd it prints letters
+        if(str[i]<26 && str[i]>(-1)){
+            str[i] = str[i] + 65;
+        }
+    }
     return;
 }
 
-/*Definition for the function that performs rotation decryption. y = roatation amount. For each element
-of the string that is greater than or equal to the rotation amount and less than 26, this function subtracts
-the rotation amount and takes modulus 26, returning a number corresponding to a letter in the decrypted 
-message. If the string element is smaller than the rotation amount but greater thean -1 then 26 is added 
-before performing the same expression as above to avoid a negative number in the modulus equation. This 
-only encrypts letters as other symbols (numbers, punctuation, white space) are outside the range of -1 to 26 */
+/*Definition for the function that performs rotation decryption. The function arguments are a pointer to the string containing the message to be encrypted,
+int y which is the rotation amount and int x which is the length of the string containing the message. For each element of the string, 65 is taken away
+from the element (which has an ASCII value from 65 to 90) to give a value between 0 and 25 which is required to perform the actual encryption. Then for 
+each element of the string that is greater than or equal to the rotation amount and less than 26, this function subtractsthe rotation amount and takes
+modulus 26. If the string element is smaller than the rotation amount but greater than -1 then 26 is added before performing the same expression as above
+to avoid a negative number in the modulus equation. This only encrypts letters as other symbols (numbers, punctuation, white space) are outside the range 
+of -1 to 26. Finally 65 is added back to each of the strings elements to return their values to ones between 65 and 90 so that each element of the string 
+corresponds to the ASCII values of the uppercase letters. This function returns void, but alters the string, given as a pointer in the argument of the 
+function, effectively returning the decrypted string */
 void d(char *str, int y, int x){
-    int i;
-    for(i = 0; i < x; i++){
+    int i; //string counter
+    for(i = 0; i < x; i++){ //i.e executes for all elements of the string cipher_text
+        if(str[i]<91 && str[i]>64){ //if the string element lies in this range it is an uppercase letter and needs to be encrypted 
+            str[i] = str[i] - 65;
+        }
+    }
+    for(i = 0; i < x; i++){ // Decryption
         if(str[i]>=y && str[i]<26){
             str[i] = (str[i] - y) % 26;
-        } else if(str[i]>(-1) && str[i]<y){
+        } else if(str[i]>(-1) && str[i]<y){ //Modulus of a negative number is undefined
             str[i] = str[i] + 26;
-            str[i] = (str[i] - y) % 26;
+            str[i] = (str[i] - y) % 26; 
+        }
+    }
+    for(i = 0; i < x; i++){ // Returns cipher_text to values between 65 and 90, so when printf'd it prints letter
+        if(str[i]<26 && str[i]>(-1)){
+            str[i] = str[i] + 65;
         }
     }
     return;
 }
 
-void rotation_decryption_of_unknown(void) {
-    int c = 0, x;
-    int count[26] = {0};
-    char input_text[] = "SJSFMPCRM WG O USBWIG. PIH WT MCI XIRUS O TWGV PM WHG OPWZWHM HC QZWAP O HFSS, WH KWZZ ZWJS WHG KVCZS ZWTS PSZWSJWBU HVOH WH WG GHIDWR. - OZPSFH SWBGHSWB";
-    while (input_text[c] != '\0') {
-        if (input_text[c] >= 'A' && input_text[c] <= 'Z') {
-            x = input_text[c] - 'A';
-            count[x]++;
+/*Definition of a function that returns the location of the largest number of a string. The function argument is a pointer to the string of which you wish to
+find the location of the largest element.  */
+int maximum_element_location(char *str) {
+    int maximum = str[0]; //records the ongoing maximum number
+    int location = 0; //records the location (i.e which element of the string) of the maximum number
+    int i = 0; //String counter
+    for(i = 1; i < 26; i++){ //For all elements of the string (This function only needs i to be less than 26 as there is only 26 possible rotations)
+        if(str[i] > maximum) {
+            maximum = str[i];
+            location = i;
         }
-        c++;
     }
-    for (c = 0; c < 26; c++) {
-        printf("%c occurs %d times in the string.\n", c + 'A', count[c]);
-    }
+    return location;
+}
 
+int counting_phrases(char *str, int x, char *word) {
+    int i = 0; // string counter
+    int j = 0; //2nd string counter
+    int count = 0;
+    for(i = 0; i < x; i++){
+        if(str[i] == word[j]){
+            if(j == (strlen(word) - 1)){
+                count++;
+                j = 0;
+                continue;
+            }
+        } else {
+            j = 0;
+            continue;
+        }
+        j++;
+    }
+    return count;
 }
