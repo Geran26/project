@@ -197,7 +197,10 @@ void d(char *str, int y, int x){
 }
 
 /*Definition of a function that returns the location of the largest number of a string. The function argument is a pointer to the string of which you wish to
-find the location of the largest element.  */
+find the location of the largest element. This function compares each element of the string to the previous largest element of the string to determine if it
+larger or not. if it is it replaces the 'maximum' variable. This replaced value is then used to compare against the remaining elements of the string. This
+continues until all elements of the stirng are tested. Whenever the maximum value is replaced the location is recorded as i (i.e the number of the element of
+the string). This value is returned once the final maximum value is determined.  */
 int maximum_element_location(char *str) {
     int maximum = str[0]; //records the ongoing maximum number
     int location = 0; //records the location (i.e which element of the string) of the maximum number
@@ -211,20 +214,28 @@ int maximum_element_location(char *str) {
     return location;
 }
 
+/*Definition of a function that counts the amount of times a substring (i.e a word) is present in a string. This function takes 3 arguments, the pointer
+to a string which is to be examined (i.e the 'decrypted' message), int x which is the size of this string and another pointer to a string which is a word
+(i.e " THE ", " AND ", etc... ). Explanation of flow control; if the element of the message string is the same as the word then the second if statement is
+tested. Else j is reset to 0 and the continue statement causes the for statement to execute from the top. The second if statement tests if the full word has
+been found. J is only incremented when the first if statement is true but the second is not, this means every time the letters in the word are found in the 
+string, j is incremented until either the word is found, j is reset and count incremented or the letters in the word and string are no longer the same. This
+continues until the entire 'decrypted' message is tested for this word. The value of the count is returned (i.e the number of times the word appears in the 
+'decrypted' message) */ 
 int counting_phrases(char *str, int x, char *word) {
     int i = 0; // string counter
     int j = 0; //2nd string counter
-    int count = 0;
-    for(i = 0; i < x; i++){
+    int count = 0; // used to record the sumber of each word
+    for(i = 0; i < x; i++){ // for all elements of the string (1st argument)
         if(str[i] == word[j]){
-            if(j == (strlen(word) - 1)){
+            if(j == (strlen(word) - 1)){ // minus one because the string length is measured from one, but elements are numbered from 0
                 count++;
                 j = 0;
-                continue;
+                continue; // executes from the top of for statement (j is not incremented)
             }
-        } else {
+        } else { // conncected to the first if statement
             j = 0;
-            continue;
+            continue; // executes from the top of for statement (j is not incremented)
         }
         j++;
     }
