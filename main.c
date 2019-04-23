@@ -20,8 +20,8 @@ int main() {
         case 2: rotation_decryption(); break; //performs rotation decryption of a given encrypted message. Needs a known key
         case 3: substitution_encryption(); break; //performs substitution encryption of a known message and key
         case 4: substitution_decryption(); break; //performs substitution decryption of a given encrypted message. Needs known key
-        case 5: rotation_decryption_of_unknown(); break;
-        case 6: substitution_decryption_of_unknown(); break;
+        case 5: rotation_decryption_of_unknown(); break; //Decrypts an unknown text where you do not know the rotation amount
+        case 6: substitution_decryption_of_unknown(); break; //Decrypts an unknown text where you do not know the letter substitutions
         default: printf("Something went wrong\n");
     }
     return 0;
@@ -29,19 +29,20 @@ int main() {
 
 //Encryption of known message using rotation encryption    
 void rotation_encryption(void){
-    char str[] = "This is a message";
-    int x = (int) strlen(str);
+    char message_text[] = "This is a message";
+    int x = (int) strlen(message_text); /*strlen(message_text) is a function in the string.h library that returns the length (i.e how many elements) of 
+                                        a string without the '\0'.*/
     int y = 5; // 'key' value. Amount the message is rotated by
-    convert_case(str); //converts lowercase to uppercase    
-    e(str, y, x); //encryption function, see below for definition and description   
-    printf("%s\n", str); // Prints string (which is now encrypted) to stdout 
+    convert_case(message_text); //converts lowercase to uppercase    
+    e(message_text, y, x); //encryption function, see below for definition and description   
+    printf("%s\n", message_text); // Prints string (which is now encrypted) to stdout 
 }
 
 //Decryption of known message using rotation decryption
 void rotation_decryption(void){
     char cipher_text[] = "SJSFMPCRM WG O USBWIG. PIH WT MCI XIRUS O TWGV PM WHG OPWZWHM HC QZWAP O HFSS, WH KWZZ ZWJS WHG KVCZS ZWTS PSZWSJWBU HVOH WH WG GHIDWR. - OZPSFH SWBGHSWB";
     int y = 14; //key value, i.e amount the encrypted message has been rotated by
-    int x = (int) strlen(cipher_text);
+    int x = (int) strlen(cipher_text); //strlen(cipher_text) is a function in the string.h library that returns the length of a string without the '\0'.
     convert_case(cipher_text); //converts form lowercase to uppercase
     d(cipher_text, y, x); //decryption function, see below for definition and description
     printf("%s\n", cipher_text); //Prints cipher_text (which is now decrypted) to stdout
@@ -51,10 +52,10 @@ void rotation_decryption(void){
 void substitution_encryption(void){
     char message_text[] = "This Is A Message.";
     char cipher_key[] = "QWERTYUIOPASDFGHJKLZXCVBNM"; //key describing what letters replace each letter of the alphabet
-    char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; //the standard alphabet
+    char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; //the standard english alphabet
     int i = 0; //string counter for alphabet and cipher_key in order to always be referring to corresponding elements of the two alphabets
     int j = 0; //string counter for message_text
-    int x = (int) strlen(message_text);
+    int x = (int) strlen(message_text); //strlen(message_text) is a function in the string.h library that returns the length of a string without the '\0'.
     convert_case(message_text); //converts letters from lowercase to uppercase
     for(i = 0; j < x; i++) { //i.e executes for the entire message, all letters of the alphabet are examined for each letter of the message
         if(alphabet[i] == message_text[j]) { //if the letter of the alphabet is the same as the letter in the message
@@ -77,7 +78,7 @@ void substitution_decryption(void) {
     char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; //the standard alphabet
     int i = 0; //string counter for alphabet and cipher_key in order to always be referring to corresponding elements of the two alphabets
     int j = 0; //string counter for cipher_text
-    int x = (int) strlen(cipher_text);
+    int x = (int) strlen(cipher_text); //strlen(cipher_text) is a function in the string.h library that returns the length of a string without the '\0'.
     convert_case(cipher_text); //converts letters form lowercase to uppercase
     for(i = 0; j < x; i++) { //i.e executes for the entire cipher_text, all letters of the alphabet are examined for each letter of cipher_text
         if(cipher_key[i] == cipher_text[j]) { //if the letter of the cipher_key is the same as the letter in the cipher_text
@@ -97,11 +98,7 @@ void rotation_decryption_of_unknown(void) {
     char cipher_text[] = "YMNX NX F RJXXFLJ"; //Unknown encrypted text
     int x = (int) strlen(cipher_text); //Return the length of a string (excluding the '\0') and assigns to x
     int y = 0; // Rotation amount, changed further down code
-    int i = 0; //string counter
     char word_count[26]; //Array will be used to record the word count of the words below
-    for(i = 0; i < 26; i++) { //Array initialisation
-        word_count[i] = 0;
-    }
     convert_case(cipher_text); //converts form lowercase to uppercase (If needed)
     for(y = 0; y <= 25; y++) { // i.e for all rotation amounts (as there is only 25 possible rotations)
         d(cipher_text, y, x); //decryption function, see below for definition and description
@@ -119,7 +116,7 @@ void rotation_decryption_of_unknown(void) {
     y = maximum_element_location(word_count); /*The maximum element of word_count tells us which rotation returns a decryption with the most of these 6 words, 
                                                 and it can be inferred that this rotation (i.e y) will give the full decryption of the text*/
     if(y >= 1){ //i.e if the rotation is anything but a rotation by 0 )staying the same
-        d(cipher_text, y, x);
+        d(cipher_text, y, x); //decryption function see function definition below
         printf("%s\n", cipher_text); //Prints cipher_text (which is now decrypted) to stdout
     } else { // Executes if none of these words are found in the text
         printf("None of these words appear in this text.");
@@ -128,24 +125,81 @@ void rotation_decryption_of_unknown(void) {
 
 void substitution_decryption_of_unknown(void) {
     char cipher_text[] = "RCR VYE BGBX HBNX FHB FXNQBRV YM RNXFH IZNQEBCJ FHB PCJB? C FHYEQHF KYF. CF'J KYF N JFYXV FHB DBRC PYEZR FBZZ VYE. CF'J N JCFH ZBQBKR. RNXFH IZNQEBCJ PNJ N RNXA ZYXR YM FHB JCFH, JY IYPBXMEZ NKR JY PCJB HB LYEZR EJB FHB MYXLB FY CKMZEBKLB FHB OCRCLHZYXCNKJ FY LXBNFB ZCMB… HB HNR JELH N AKYPZBRQB YM FHB RNXA JCRB FHNF HB LYEZR BGBK ABBI FHB YKBJ HB LNXBR NWYEF MXYO RVCKQ. FHB RNXA JCRB YM FHB MYXLB CJ N INFHPNV FY ONKV NWCZCFCBJ JYOB LYKJCRBX FY WB EKKNFEXNZ. HB WBLNOB JY IYPBXMEZ… FHB YKZV FHCKQ HB PNJ NMXNCR YM PNJ ZYJCKQ HCJ IYPBX, PHCLH BGBKFENZZV, YM LYEXJB, HB RCR. EKMYXFEKNFBZV, HB FNEQHF HCJ NIIXBKFCLB BGBXVFHCKQ HB AKBP, FHBK HCJ NIIXBKFCLB ACZZBR HCO CK HCJ JZBBI. CXYKCL. HB LYEZR JNGB YFHBXJ MXYO RBNFH, WEF KYF HCOJBZM.";
-    char letter_count[26];
-    int i = 0;
-    int punctuation = 0;
-    for(i = 0; i < 26; i++) {
+    char letter_count[26]; //Used to record the frequency of each letter in the cipher_text
+    char ordered_letter_count[26]; //Used to order the above string from largest to smallest without changing it
+    char cipher_frequency[26]; //String stores the alphabet that statistically is most likely to be the one used to encrypt
+    char letter_frequency[] = "ETAOINSHRDLUCMWFGYPBVKJXQZ"; //ordered frequency that letters appear throughout the english language
+    int i = 0, j = 0; //String countesr throughout bell=ow code
+    for(i = 0; i < 26; i++) { //array initialisation
         letter_count[i] = 0;
+        ordered_letter_count[i] = 0;
     }
-    convert_case(cipher_text);
+    convert_case(cipher_text); //converts letters from lower to upper case (if required)
     for(i = 0; i < strlen(cipher_text); i++) {
-        if(cipher_text[i] < 91 && cipher_text[i] > 64) {
-            int letter_value = cipher_text[i] - 65;
-            letter_count[letter_value]++;
-        } else {
-            punctuation++;
+        if(cipher_text[i] < 91 && cipher_text[i] > 64) { //If element of cipher_text is an uppercase letter
+            int letter_value = cipher_text[i] - 65; //gives letter_value a value between 0 and 25 (corresponding A - Z)
+            letter_count[letter_value]++; /*letter_value is a number between 0 and 25 so the element of letter_count (0 - 25) corresponding to the 
+                                            letters (A - Z) is incremented to record the letter that appeared in cipher text*/
+            ordered_letter_count[letter_value]++; //Same as above
+        } 
+    }
+    for(i = 0; i < 25; i++) { // A 'bubble sort'
+        for(j = 0; j < (25 - i); j++) {
+            if(ordered_letter_count[j] < ordered_letter_count[(j+1)]){
+                int temp = ordered_letter_count[j];
+                ordered_letter_count[j] = ordered_letter_count[(j+1)];
+                ordered_letter_count[(j+1)] = temp;
+            }
         }
     }
-    for(i = 0; i <26; i++) {
-        printf("%c: %d\n", (char)(i+65), letter_count[i]);
+   j = 0;
+    for(i = 0; j < 26; i++) {
+        if(letter_count[i] == ordered_letter_count[j]) {
+            cipher_frequency[j] = i + 65;
+            if(cipher_frequency[j] == cipher_frequency[(j-1)] && j != 0) {
+                continue;
+            } else if(cipher_frequency[j] == cipher_frequency[(j-2)] && j>=2) {
+                continue;
+            }
+            j++;
+            i = -1;
+        }
     }
+    j = 0;
+    for(i = 0; j < strlen(cipher_text); i++) { //i.e executes for the entire cipher_text, all letters of the alphabet are examined for each letter of cipher_text
+        if(cipher_frequency[i] == cipher_text[j]) { //if the letter of the cipher_frequency is the same as the letter in the cipher_text
+            cipher_text[j] = letter_frequency[i]; //substitute the cipher_text letter for the letter in the standard alphabet that corresponds to the letter in cipher_key
+            i = -1; //resets string counter to 0 once the increment is performed in the for loop
+            j++;  /*increments the string counter for message_text, i.e causes the above if statement to examine the next letter in the message. 
+                    Only increments when a letter of the message is encrypted*/
+        } else if(cipher_text[j]>90 || cipher_text[j]<65) {  //executes if the element of the message is not an uppercase letter
+            j++; //increments message_text, i.e moves onto the next element because this one is not a letter
+            i = -1; //resets string counter to 0 once the increment is performed in the for loop
+        }
+    }
+    printf("%s\n", cipher_text); //prints decrypted message to stdout
+    for(j = 0; j < strlen(cipher_text); j++) { //i.e executes for the entire cipher_text, all letters of the alphabet are examined for each letter of cipher_text
+        if(cipher_text[j] == 'H') { //if the letter of the cipher_frequency is the same as the letter in the cipher_text
+            cipher_text[j] = 'R'; //substitute the cipher_text letter for the letter in the standard alphabet that corresponds to the letter in cipher_key
+        } else if(cipher_text[j] == 'A'){
+            cipher_text[j] = 'H';
+        } else if(cipher_text[j] == 'N') {
+            cipher_text[j] = 'A';
+        } else if(cipher_text[j] == 'M') {
+            cipher_text[j] = 'F';
+        } else if(cipher_text[j] == 'F') {
+            cipher_text[j] = 'P';
+        } else if(cipher_text[j] == 'P') {
+            cipher_text[j] = 'M';
+        } else if(cipher_text[j] == 'R') {
+            cipher_text[j] = 'N';
+        } else if(cipher_text[j] == 'B') {
+            cipher_text[j] = 'K';
+        } else if(cipher_text[j] == 'K') {
+            cipher_text[j] = 'B';
+        }
+    }
+    printf("%s\n", cipher_text); //prints decrypted message to stdout
 }
 
 /*Definition for function that converts the case of the message. For every element of the string
@@ -157,7 +211,7 @@ void convert_case(char *str){
     int i;
     int x = (int) strlen(str);
     for(i=0; i<x; i++){
-        if(str[i]>96 && str[i]<123){
+        if(str[i]>96 && str[i]<123) {
             str[i] = str[i] -32;
         }
     }
