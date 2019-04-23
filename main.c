@@ -11,15 +11,17 @@ void substitution_decryption(void);
 void rotation_decryption_of_unknown(void);
 int maximum_element_location(char *str);
 int counting_phrases(char *str, int x, char *word);
+void substitution_decryption_of_unknown(void);
 
 int main() {
-    int menu_select = 5;
+    int menu_select = 6;
     switch (menu_select) {
         case 1: rotation_encryption(); break; //performs rotation encryption of a known message. Needs a key
         case 2: rotation_decryption(); break; //performs rotation decryption of a given encrypted message. Needs a known key
         case 3: substitution_encryption(); break; //performs substitution encryption of a known message and key
         case 4: substitution_decryption(); break; //performs substitution decryption of a given encrypted message. Needs known key
         case 5: rotation_decryption_of_unknown(); break;
+        case 6: substitution_decryption_of_unknown(); break;
         default: printf("Something went wrong\n");
     }
     return 0;
@@ -95,7 +97,11 @@ void rotation_decryption_of_unknown(void) {
     char cipher_text[] = "YMNX NX F RJXXFLJ"; //Unknown encrypted text
     int x = (int) strlen(cipher_text); //Return the length of a string (excluding the '\0') and assigns to x
     int y = 0; // Rotation amount, changed further down code
+    int i = 0; //string counter
     char word_count[26]; //Array will be used to record the word count of the words below
+    for(i = 0; i < 26; i++) { //Array initialisation
+        word_count[i] = 0;
+    }
     convert_case(cipher_text); //converts form lowercase to uppercase (If needed)
     for(y = 0; y <= 25; y++) { // i.e for all rotation amounts (as there is only 25 possible rotations)
         d(cipher_text, y, x); //decryption function, see below for definition and description
@@ -117,6 +123,28 @@ void rotation_decryption_of_unknown(void) {
         printf("%s\n", cipher_text); //Prints cipher_text (which is now decrypted) to stdout
     } else { // Executes if none of these words are found in the text
         printf("None of these words appear in this text.");
+    }
+}
+
+void substitution_decryption_of_unknown(void) {
+    char cipher_text[] = "RCR VYE BGBX HBNX FHB FXNQBRV YM RNXFH IZNQEBCJ FHB PCJB? C FHYEQHF KYF. CF'J KYF N JFYXV FHB DBRC PYEZR FBZZ VYE. CF'J N JCFH ZBQBKR. RNXFH IZNQEBCJ PNJ N RNXA ZYXR YM FHB JCFH, JY IYPBXMEZ NKR JY PCJB HB LYEZR EJB FHB MYXLB FY CKMZEBKLB FHB OCRCLHZYXCNKJ FY LXBNFB ZCMB… HB HNR JELH N AKYPZBRQB YM FHB RNXA JCRB FHNF HB LYEZR BGBK ABBI FHB YKBJ HB LNXBR NWYEF MXYO RVCKQ. FHB RNXA JCRB YM FHB MYXLB CJ N INFHPNV FY ONKV NWCZCFCBJ JYOB LYKJCRBX FY WB EKKNFEXNZ. HB WBLNOB JY IYPBXMEZ… FHB YKZV FHCKQ HB PNJ NMXNCR YM PNJ ZYJCKQ HCJ IYPBX, PHCLH BGBKFENZZV, YM LYEXJB, HB RCR. EKMYXFEKNFBZV, HB FNEQHF HCJ NIIXBKFCLB BGBXVFHCKQ HB AKBP, FHBK HCJ NIIXBKFCLB ACZZBR HCO CK HCJ JZBBI. CXYKCL. HB LYEZR JNGB YFHBXJ MXYO RBNFH, WEF KYF HCOJBZM.";
+    char letter_count[26];
+    int i = 0;
+    int punctuation = 0;
+    for(i = 0; i < 26; i++) {
+        letter_count[i] = 0;
+    }
+    convert_case(cipher_text);
+    for(i = 0; i < strlen(cipher_text); i++) {
+        if(cipher_text[i] < 91 && cipher_text[i] > 64) {
+            int letter_value = cipher_text[i] - 65;
+            letter_count[letter_value]++;
+        } else {
+            punctuation++;
+        }
+    }
+    for(i = 0; i <26; i++) {
+        printf("%c: %d\n", (char)(i+65), letter_count[i]);
     }
 }
 
