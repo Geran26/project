@@ -14,28 +14,62 @@ int counting_phrases(char *str, int x, char *word);
 void substitution_decryption_of_unknown(void);
 
 int main() {
-    int menu_select = 6;
-    switch (menu_select) {
-        case 1: rotation_encryption(); break; //performs rotation encryption of a known message. Needs a key
-        case 2: rotation_decryption(); break; //performs rotation decryption of a given encrypted message. Needs a known key
-        case 3: substitution_encryption(); break; //performs substitution encryption of a known message and key
-        case 4: substitution_decryption(); break; //performs substitution decryption of a given encrypted message. Needs known key
-        case 5: rotation_decryption_of_unknown(); break; //Decrypts an unknown text where you do not know the rotation amount
-        case 6: substitution_decryption_of_unknown(); break; //Decrypts an unknown text where you do not know the letter substitutions
-        default: printf("Something went wrong\n");
-    }
+    int menu_select = 1;
+    /*printf("Please select which function you wish to perform: \n");
+    printf("Enter 1 for rotation encrytion\n");
+    printf("Enter 2 for rotation decryption\n");
+    printf("Enter 3 for substitution encryption\n");
+    printf("Enter 4 for substitution decryption\n");
+    printf("Enter 5 for rotation decryption without a key\n");
+    printf("Enter 6 for substitution decryption without a key\n");
+    scanf("%d", &menu_select);*/
+        switch (menu_select) {
+            case 1: rotation_encryption(); break; //performs rotation encryption of a known message. Needs a key
+            case 2: rotation_decryption(); break; //performs rotation decryption of a given encrypted message. Needs a known key
+            case 3: substitution_encryption(); break; //performs substitution encryption of a known message and key
+            case 4: substitution_decryption(); break; //performs substitution decryption of a given encrypted message. Needs known key
+            case 5: rotation_decryption_of_unknown(); break; //Decrypts an unknown text where you do not know the rotation amount
+            case 6: substitution_decryption_of_unknown(); break; //Decrypts an unknown text where you do not know the letter substitutions
+            default: printf("Something went wrong\n");
+        }
     return 0;
 }
 
 //Encryption of known message using rotation encryption    
 void rotation_encryption(void){
-    char message_text[] = "This is a message";
-    int x = (int) strlen(message_text); /*strlen(message_text) is a function in the string.h library that returns the length (i.e how many elements) of 
-                                        a string without the '\0'.*/
-    int y = 5; // 'key' value. Amount the message is rotated by
+    FILE *fp;
+    fp = fopen("input.txt", "r");
+    if(fp == NULL) {
+        printf("Can't open input file");
+        return;
+    }
+    int count = 0;
+    while(!feof(fp)){
+        char c;
+        fscanf(fp, "%c", &c);
+        if(!feof(fp)){
+            printf("%c", c);
+        }   
+        //printf("%d ", count);
+        //count++;
+    }
+    /*char message_text[1024];
+    int i = 0;
+    for(i = 0; i < 1024; i++) {
+        message_text[i] = 0;
+    }
+    printf("Enter a message to be encoded (maximum 1024 characters): ");
+    for(i = 0; i < 1024; i++)
+    scanf("%c", &message_text[i]);
+    int x = (int) strlen(message_text); strlen(message_text) is a function in the string.h library that returns the length (i.e how many elements) of 
+                                        a string without the '\0'*/
+    /*printf("%d\n", x);
+    int y; // 'key' value. Amount the message is rotated by
+    printf("Enter a key (0 - 25: ");
+    scanf("%d", &y);
     convert_case(message_text); //converts lowercase to uppercase    
     e(message_text, y, x); //encryption function, see below for definition and description   
-    printf("%s\n", message_text); // Prints string (which is now encrypted) to stdout 
+    printf("%s\n", message_text); // Prints string (which is now encrypted) to stdout*/
 }
 
 //Decryption of known message using rotation decryption
