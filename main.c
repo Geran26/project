@@ -14,7 +14,7 @@ int counting_phrases(char *str, int x, char *word);
 void substitution_decryption_of_unknown(void);
 
 int main() {
-    int menu_select = 1;
+    int menu_select = 4;
     /*printf("Please select which function you wish to perform: \n");
     printf("Enter 1 for rotation encrytion\n");
     printf("Enter 2 for rotation decryption\n");
@@ -38,60 +38,138 @@ int main() {
 //Encryption of known message using rotation encryption    
 void rotation_encryption(void){
     FILE *fp;
-    fp = fopen("input.txt", "r");
-    if(fp == NULL) {
+    fp = fopen("input.txt", "r+"); //Opening file to read input and the recieve output
+    if(fp == NULL) { //Error checking, i.e executes if unable to open file
         printf("Can't open input file");
-        return;
+        return; //Exits function completely - no point continuing if you cant read the file
     }
-    int count = 0;
-    while(!feof(fp)){
-        char c;
-        fscanf(fp, "%c", &c);
-        if(!feof(fp)){
-            printf("%c", c);
-        }   
-        //printf("%d ", count);
-        //count++;
+    int count = 0; //counter for how long the input message is
+    while(!feof(fp)) { //While not at the end of the file
+        char c = 0;
+        fscanf(fp, "%c", &c); //Assingning file character to variable c to be used in if statement below
+        if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
+            count++; //count is incremented to show there is another letter in the string to be inialised below
+        } else { //if it is a newline
+            count = count - 1; /*count is incremented an extra time so to get correct number of characters in the 
+                                first line count needs to be decreased by 1*/
+            break; //stop reading the file as we have counted all elements in the first row
+        }
     }
-    /*char message_text[1024];
-    int i = 0;
-    for(i = 0; i < 1024; i++) {
-        message_text[i] = 0;
+    char message_text[count]; //string with length = amount of characters in first line of file
+    int i = 0; //string counter
+    fseek(fp, 0, SEEK_SET); //resets the file position indicator to beginning of the file - so we can read from beginning again
+    while(!feof(fp)) { //While not at the end of the file
+        char c = 0;
+        fscanf(fp, "%c", &c); //Assingning file character to variable c to be used in if statement below
+        if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
+            message_text[i] = c; // gives each string element the the corresponding letter in the file's first row
+            i++; //i.e moving to the next element of message_text
+        } else { //when c == newline
+            break; //exits once the newline has been reached
+        } 
     }
-    printf("Enter a message to be encoded (maximum 1024 characters): ");
-    for(i = 0; i < 1024; i++)
-    scanf("%c", &message_text[i]);
-    int x = (int) strlen(message_text); strlen(message_text) is a function in the string.h library that returns the length (i.e how many elements) of 
-                                        a string without the '\0'*/
-    /*printf("%d\n", x);
     int y; // 'key' value. Amount the message is rotated by
-    printf("Enter a key (0 - 25: ");
-    scanf("%d", &y);
+    fscanf(fp, "%d", &y); //reads second line of file for an interger number between 0 and 25
     convert_case(message_text); //converts lowercase to uppercase    
-    e(message_text, y, x); //encryption function, see below for definition and description   
-    printf("%s\n", message_text); // Prints string (which is now encrypted) to stdout*/
+    e(message_text, y, count); //encryption function, see below for definition and description   
+    printf("%s\n", message_text); // Prints string (which  is now encrypted) to stdout
+    fprintf(fp, "\n%s\n", message_text); //Prints string (which is now encrypted) to the file
+    fclose(fp); //closes the file fp
 }
 
 //Decryption of known message using rotation decryption
 void rotation_decryption(void){
-    char cipher_text[] = "SJSFMPCRM WG O USBWIG. PIH WT MCI XIRUS O TWGV PM WHG OPWZWHM HC QZWAP O HFSS, WH KWZZ ZWJS WHG KVCZS ZWTS PSZWSJWBU HVOH WH WG GHIDWR. - OZPSFH SWBGHSWB";
-    int y = 14; //key value, i.e amount the encrypted message has been rotated by
-    int x = (int) strlen(cipher_text); //strlen(cipher_text) is a function in the string.h library that returns the length of a string without the '\0'.
+    FILE *fp;
+    fp = fopen("DecryptionInput.txt", "r+"); //Opening file to read input and the recieve output
+    if(fp == NULL) { //Error checking, i.e executes if unable to open file
+        printf("Can't open input file");
+        return; //Exits function completely - no point continuing if you cant read the file
+    }
+    int count = 0; //counter for how long the input message is
+    while(!feof(fp)) { //While not at the end of the file
+        char c = 0;
+        fscanf(fp, "%c", &c); //Assingning file character to variable c to be used in if statement below
+        if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
+            count++; //count is incremented to show there is another letter in the string to be inialised below
+        } else { //if it is a newline
+            count = count - 1; /*count is incremented an extra time so to get correct number of characters in the 
+                                first line count needs to be decreased by 1*/
+            break; //stop reading the file as we have counted all elements in the first row
+        }
+    }
+    char cipher_text[count]; //string with length = amount of characters in first line of file
+    int i = 0; //string counter
+    fseek(fp, 0, SEEK_SET); //resets the file position indicator to beginning of the file - so we can read from beginning again
+    while(!feof(fp)) { //While not at the end of the file
+        char c = 0;
+        fscanf(fp, "%c", &c); //Assingning file character to variable c to be used in if statement below
+        if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
+            cipher_text[i] = c; // gives each string element the the corresponding letter in the file's first row
+            i++; //i.e moving to the next element of cipher_text
+        } else { //when c == newline
+            break; //exits once the newline has been reached
+        } 
+    }
+    int y; // 'key' value. Amount the message is rotated by
+    fscanf(fp, "%d", &y); //reads second line of file for an interger number between 0 and 25
     convert_case(cipher_text); //converts form lowercase to uppercase
-    d(cipher_text, y, x); //decryption function, see below for definition and description
+    d(cipher_text, y, count); //decryption function, see below for definition and description
     printf("%s\n", cipher_text); //Prints cipher_text (which is now decrypted) to stdout
+    fprintf(fp, "\n%s\n", cipher_text); //Prints cipher_text (which is now decrypted) to the file
+    fclose(fp); //closes the file
 }
 
 //Encryption of a known message with known key using substitution encryption
 void substitution_encryption(void){
-    char message_text[] = "This Is A Message.";
-    char cipher_key[] = "QWERTYUIOPASDFGHJKLZXCVBNM"; //key describing what letters replace each letter of the alphabet
+    FILE *fp;
+    fp = fopen("SubEncryptInput.txt", "r+"); //Opening file to read input and the recieve output
+    if(fp == NULL) { //Error checking, i.e executes if unable to open file
+        printf("Can't open input file");
+        return; //Exits function completely - no point continuing if you cant read the file
+    }
+    int count = 0; //counter for how long the input message is
+    while(!feof(fp)) { //While not at the end of the file
+        char c = 0;
+        fscanf(fp, "%c", &c); //Assingning file character to variable c to be used in if statement below
+        if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
+            count++; //count is incremented to show there is another letter in the string to be inialised below
+        } else { //if it is a newline
+            count = count - 1; /*count is incremented an extra time so to get correct number of characters in the 
+                                first line count needs to be decreased by 1*/
+            break; //stop reading the file as we have counted all elements in the first row
+        }
+    }
+    char message_text[count]; //string with length = amount of characters in first line of file
+    int i = 0; //string counter
+    fseek(fp, 0, SEEK_SET); //resets the file position indicator to beginning of the file - so we can read from beginning again
+    while(!feof(fp)) { //While not at the end of the file
+        char c = 0;
+        fscanf(fp, "%c", &c); //Assingning file character to variable c to be used in if statement below
+        if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
+            message_text[i] = c; // gives each string element the the corresponding letter in the file's first row
+            i++; //i.e moving to the next element of message_text
+        } else { //when c == newline
+            break; //exits once the newline has been reached
+        } 
+    }
+    char cipher_key[26]; //key describing what letters replace each letter of the alphabet
+    i = 0; //resetting the string counter
+    while(!feof(fp)) { //while not at the end of the file
+        char c = 0; // char used to do check below
+        fscanf(fp, "%c", &c); //assigns each character of the file to variable c
+        if(c != '\n' && i != 26) { // This executes if the character is not a newline and if the string is not full
+            cipher_key[i] = c; //each element of string becomes corresponding character in file
+            i++; //i.e moves to the next element of string
+        } else {
+            break; //exits once all 26 character have been read or a newline is found
+        }
+    }
     char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; //the standard english alphabet
-    int i = 0; //string counter for alphabet and cipher_key in order to always be referring to corresponding elements of the two alphabets
+    i = 0; /*string counter reset for use as counter for alphabet and cipher_key in order to always be referring to 
+            corresponding elements of the two alphabets*/
     int j = 0; //string counter for message_text
-    int x = (int) strlen(message_text); //strlen(message_text) is a function in the string.h library that returns the length of a string without the '\0'.
-    convert_case(message_text); //converts letters from lowercase to uppercase
-    for(i = 0; j < x; i++) { //i.e executes for the entire message, all letters of the alphabet are examined for each letter of the message
+    convert_case(message_text); //converts letters from lowercase to uppercase (if required)
+    for(i = 0; j < count; i++) { //i.e executes for the entire message, all letters of the alphabet are examined for each letter of the message
         if(alphabet[i] == message_text[j]) { //if the letter of the alphabet is the same as the letter in the message
             message_text[j] = cipher_key[i]; //substitute that message letter for the corresponding letter in the cipher alphabet
             i = -1; //resets string counter to 0 once the increment is performed in the for loop
@@ -103,18 +181,60 @@ void substitution_encryption(void){
         }
     }
     printf("%s\n", message_text); //prints encrypted message to stdout
+    fprintf(fp, "\n%s\n", message_text); //prints encrypted message to file
+    fclose(fp); //closes the file
 }
 
 //Decryption of a known cipher text with a known cipher alphabet (key) using substitution decryption
 void substitution_decryption(void) {
-    char cipher_text[] = "ZIOL OL Q DTLLQUT";
-    char cipher_key[] = "QWERTYUIOPASDFGHJKLZXCVBNM"; //key describing what letters replace each letter of the alphabet
+    FILE *fp;
+    fp = fopen("SubDecryptInput.txt", "r+"); //Opening file to read input and the recieve output
+    if(fp == NULL) { //Error checking, i.e executes if unable to open file
+        printf("Can't open input file");
+        return; //Exits function completely - no point continuing if you cant read the file
+    }
+    int count = 0; //counter for how long the input message is
+    while(!feof(fp)) { //While not at the end of the file
+        char c = 0;
+        fscanf(fp, "%c", &c); //Assingning file character to variable c to be used in if statement below
+        if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
+            count++; //count is incremented to show there is another letter in the string to be inialised below
+        } else { //if it is a newline
+            count = count - 1; /*count is incremented an extra time so to get correct number of characters in the 
+                                first line count needs to be decreased by 1*/
+            break; //stop reading the file as we have counted all elements in the first row
+        }
+    }
+    char cipher_text[count]; //string with length = amount of characters in first line of file
+    int i = 0; //string counter
+    fseek(fp, 0, SEEK_SET); //resets the file position indicator to beginning of the file - so we can read from beginning again
+    while(!feof(fp)) { //While not at the end of the file
+        char c = 0;
+        fscanf(fp, "%c", &c); //Assingning file character to variable c to be used in if statement below
+        if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
+            cipher_text[i] = c; // gives each string element the the corresponding letter in the file's first row
+            i++; //i.e moving to the next element of message_text
+        } else { //when c == newline
+            break; //exits once the newline has been reached
+        } 
+    }
+    char cipher_key[26]; //key describing what letters replace each letter of the alphabet (26 = number of letters in the alphabet)
+    i = 0; //resetting the string counter
+    while(!feof(fp)) { //while not at the end of the file
+        char c = 0; // char used to do check below in if statement
+        fscanf(fp, "%c", &c); //assigns each character of the file to variable c
+        if(c != '\n' && i != 26) { // This executes if the character is not a newline and if the string is not full
+            cipher_key[i] = c; //each element of string becomes corresponding character in file
+            i++; //i.e moves to the next element of string
+        } else {
+            break; //exits once all 26 character have been read or a newline is found
+        }
+    }
     char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; //the standard alphabet
-    int i = 0; //string counter for alphabet and cipher_key in order to always be referring to corresponding elements of the two alphabets
+    i = 0; //reset string counter for use as counter for alphabet and cipher_key in order to always be referring to corresponding elements of the two alphabets
     int j = 0; //string counter for cipher_text
-    int x = (int) strlen(cipher_text); //strlen(cipher_text) is a function in the string.h library that returns the length of a string without the '\0'.
     convert_case(cipher_text); //converts letters form lowercase to uppercase
-    for(i = 0; j < x; i++) { //i.e executes for the entire cipher_text, all letters of the alphabet are examined for each letter of cipher_text
+    for(i = 0; j < count; i++) { //i.e executes for the entire cipher_text, all letters of the alphabet are examined for each letter of cipher_texcount
         if(cipher_key[i] == cipher_text[j]) { //if the letter of the cipher_key is the same as the letter in the cipher_text
             cipher_text[j] = alphabet[i]; //substitute the cipher_text letter for the letter in the standard alphabet that corresponds to the letter in cipher_key
             i = -1; //resets string counter to 0 once the increment is performed in the for loop
@@ -126,6 +246,8 @@ void substitution_decryption(void) {
         }
     }
     printf("%s\n", cipher_text); //prints decrypted message to stdout
+    fprintf(fp, "\n%s\n", cipher_text); //prints decrypted message to file
+    fclose(fp); //closes the file
 }
 
 void rotation_decryption_of_unknown(void) {
