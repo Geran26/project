@@ -1,4 +1,11 @@
-/*Geran Dunlop's (3324608) code for the ENGG1003 Assignment 1.  */
+/*Geran Dunlop's (3324608) code for the ENGG1003 Assignment 1. This code performs 6 different tasks, rotation encryption and 
+decryption, substitution encryption and decryption, rotation decryption with unknown key and substitution decryption with an 
+unknown key. To choose which operation to perform please enter a number 1 - 6 in the file called 'stdinInput'; 1 for rotation
+encryption, 2 for rotation decryption, 3 for substitution encryption. 4 for substitution decryption, 5 for rotation decryption
+with an unknown key, 6 for substitution decryption with an unknown key. Text to be encrypted and decrypted needs to be written
+in the file labelled 'Input.txt' on the first line, with the key number or alphabet written on the 2nd line of the file. If no
+key needs to be inputted only write on the first line of the file. The program is run using the custom run script 'runProject'
+accessed by pressing the drop down menu on the triangle run symbol and selecting 'runProject'. */ 
 
 #include <stdio.h> 
 #include <string.h>
@@ -47,7 +54,7 @@ else it wont be wholly encrypted*/
 void rotation_encryption(void)
 {
     FILE *fp;
-    fp = fopen("input.txt", "r+"); //Opening file to read input and the recieve output
+    fp = fopen("Input.txt", "r+"); //Opening file to read input and the recieve output
     if(fp == NULL) { //Error checking, i.e executes if unable to open file
         printf("Can't open input file");
         return; //Exits function completely - no point continuing if you cant read the file
@@ -60,7 +67,7 @@ void rotation_encryption(void)
             count++; //count is incremented to show there is another letter in the string to be inialised below
         } else { //if it is a newline
             count = count - 1; /*count is incremented an extra time so to get correct number of characters in the 
-                                first line count needs to be decreased by 1*/
+                                //first line count needs to be decreased by 1*/
             break; //stop reading the file as we have counted all elements in the first row
         }
     }
@@ -77,12 +84,16 @@ void rotation_encryption(void)
             break; //exits once the newline has been reached
         } 
     }
+    message_text[count - 1] = '\0';
     int y; // 'key' value. Amount the message is rotated by
     fscanf(fp, "%d", &y); //reads second line of file for an interger number between 0 and 25
     convert_case(message_text); //converts lowercase to uppercase    
     e(message_text, y, count); //encryption function, see below for definition and description   
-    printf("%s\n", message_text); // Prints string (which  is now encrypted) to stdout
-    fprintf(fp, "\n%s\n", message_text); //Prints string (which is now encrypted) to the file
+    fprintf(fp, "\n");
+    for(i = 0; i<count; i++){
+        printf("%c", (char)message_text[i]);
+        fprintf(fp, "%c", (char)message_text[i]);
+    }
     fclose(fp); //closes the file fp
 }
 
@@ -95,7 +106,7 @@ else it wont be wholly decrypted*/
 void rotation_decryption(void)
 {
     FILE *fp;
-    fp = fopen("DecryptionInput.txt", "r+"); //Opening file to read input and the recieve output
+    fp = fopen("Input.txt", "r+"); //Opening file to read input and the recieve output
     if(fp == NULL) { //Error checking, i.e executes if unable to open file
         printf("Can't open input file");
         return; //Exits function completely - no point continuing if you cant read the file
@@ -129,8 +140,11 @@ void rotation_decryption(void)
     fscanf(fp, "%d", &y); //reads second line of file for an interger number between 0 and 25
     convert_case(cipher_text); //converts form lowercase to uppercase
     d(cipher_text, y, count); //decryption function, see below for definition and description
-    printf("%s\n", cipher_text); //Prints cipher_text (which is now decrypted) to stdout
-    fprintf(fp, "\n%s\n", cipher_text); //Prints cipher_text (which is now decrypted) to the file
+    fprintf(fp, "\n");
+    for(i = 0; i<count; i++){
+        printf("%c", (char)cipher_text[i]); //Prints cipher_text (which is now decrypted) to stdout
+        fprintf(fp, "%c", (char)cipher_text[i]); //Prints cipher_text (which is now decrypted) to the file
+    }
     fclose(fp); //closes the file
 }
 
@@ -143,7 +157,7 @@ that there is 26 letters on the second line to use as the cipher key. */
 void substitution_encryption(void)
 {
     FILE *fp;
-    fp = fopen("SubEncryptInput.txt", "r+"); //Opening file to read input and the recieve output
+    fp = fopen("Input.txt", "r+"); //Opening file to read input and the recieve output
     if(fp == NULL) { //Error checking, i.e executes if unable to open file
         printf("Can't open input file");
         return; //Exits function completely - no point continuing if you cant read the file
@@ -201,8 +215,11 @@ void substitution_encryption(void)
             i = -1; //resets string counter to 0 once the increment is performed in the for loop
         }
     }
-    printf("%s\n", message_text); //prints encrypted message to stdout
-    fprintf(fp, "\n%s\n", message_text); //prints encrypted message to file
+    fprintf(fp, "\n");
+    for(i = 0; i<count; i++){
+        printf("%c", (char)message_text[i]); //Prints message_text (which is now encrypted) to stdout
+        fprintf(fp, "%c", (char)message_text[i]); //Prints message_text (which is now encrypted) to the file
+    }
     fclose(fp); //closes the file
 }
 
@@ -215,7 +232,7 @@ input text to all be written on the first line of the file. The cipher key is th
 void substitution_decryption(void)
 {
     FILE *fp;
-    fp = fopen("SubDecryptInput.txt", "r+"); //Opening file to read input and the recieve output
+    fp = fopen("Input.txt", "r+"); //Opening file to read input and the recieve output
     if(fp == NULL) { //Error checking, i.e executes if unable to open file
         printf("Can't open input file");
         return; //Exits function completely - no point continuing if you cant read the file
@@ -272,8 +289,11 @@ void substitution_decryption(void)
             i = -1; //resets string counter to 0 once the increment is performed in the for loop
         }
     }
-    printf("%s\n", cipher_text); //prints decrypted message to stdout
-    fprintf(fp, "\n%s\n", cipher_text); //prints decrypted message to file
+    fprintf(fp, "\n");
+    for(i = 0; i<count; i++){
+        printf("%c", (char)cipher_text[i]); //Prints cipher_text (which is now decrypted) to stdout
+        fprintf(fp, "%c", (char)cipher_text[i]); //Prints cipher_text (which is now decrypted) to the file
+    }
     fclose(fp); //closes the file
 }
 
@@ -288,7 +308,7 @@ message text is on the first line of the file. */
 void rotation_decryption_of_unknown(void)
 {
     FILE *fp;
-    fp = fopen("RotDecryptUnknown.txt", "r+"); //Opening file to read input and the recieve output
+    fp = fopen("Input.txt", "r+"); //Opening file to read input and the recieve output
     if(fp == NULL) { //Error checking, i.e executes if unable to open file
         printf("Can't open input file");
         return; //Exits function completely - no point continuing if you cant read the file
@@ -301,7 +321,7 @@ void rotation_decryption_of_unknown(void)
             count++; //count is incremented to show there is another letter in the string to be inialised below
         } else { //if it is a newline
             count = count - 1; /*count is incremented an extra time so to get correct number of characters in the 
-                                first line count needs to be decreased by 1*/
+                                // first line count needs to be decreased by 1*/
             break; //stop reading the file as we have counted all elements in the first row
         }
     }
@@ -340,8 +360,11 @@ void rotation_decryption_of_unknown(void)
     if(y >= 1){ /*i.e if the rotation is anything but a rotation by 0 (staying the same), above function maximum_element_location will return 0 if none of these 
                 words are found in any of the rotation decryptions.*/
         d(cipher_text, y, count); //decryption function see function definition below
-        printf("%s\n", cipher_text); //Prints cipher_text (which is now decrypted) to stdout
-        fprintf(fp, "\n%s\n", cipher_text); //Prints decrypted cipher_text to the file
+        fprintf(fp, "\n");
+        for(i = 0; i<count; i++){
+            printf("%c", (char)cipher_text[i]); //Prints cipher_text (which is now decrypted) to stdout
+            fprintf(fp, "%c", (char)cipher_text[i]); //Prints cipher_text (which is now decrypted) to the file
+        }
     } else { // Executes if none of these words are found in the text
         printf("None of these words appear in this text.");
     }
@@ -362,7 +385,7 @@ to correspond with the standard statistical frequency of each letter.*/
 void substitution_decryption_of_unknown(void)
 {
     FILE *fp;
-    fp = fopen("SubDecryptUnknown.txt", "r+"); //Opening file to read input and the recieve output
+    fp = fopen("Input.txt", "r+"); //Opening file to read input and the recieve output
     if(fp == NULL) { //Error checking, i.e executes if unable to open file
         printf("Can't open input file");
         return; //Exits function completely - no point continuing if you cant read the file
@@ -392,10 +415,10 @@ void substitution_decryption_of_unknown(void)
             break; //exits once the newline has been reached
         } 
     }
-    char letter_count[26]; //Used to record the frequency of each letter in the cipher_text
-    char ordered_letter_count[26]; //Used to order the above string from largest to smallest without changing it
-    char cipher_frequency[26]; //String stores the alphabet that statistically is most likely to be the one used to encrypt
-    char letter_frequency[] = "ETAOINSHRDLUCMWFGYPBVKJXQZ"; //ordered frequency that letters appear throughout the english language
+    char letter_count[27]; //Used to record the frequency of each letter in the cipher_text
+    char ordered_letter_count[27]; //Used to order the above string from largest to smallest without changing it
+    char cipher_frequency[27]; //String stores the alphabet that statistically is most likely to be the one used to encrypt
+    char letter_frequency[27] = "ETAOINSHRDLUCMWFGYPBVKJXQZ"; //ordered frequency that letters appear throughout the english language
     i = 0; //resetting string counter for use below
     int j = 0; //String counters throughout bellow code
     for(i = 0; i < 26; i++) { //array initialisation, needed as these arrays will be incremented
@@ -423,7 +446,7 @@ void substitution_decryption_of_unknown(void)
             }
         }
     }
-   j = 0; //resetting the string counter
+    j = 0; //resetting the string counter
    /*The below loops until the element of letter_count is equal to the element of ordered_letter_count (i.e referring to the 
    same letter). The two string counters are needed because element i of letter_count (0 - 25) corresponds to a letter (A = 0 - 
    Z = 25), element j of ordered_letter_count gives the order of the frequency of the letters, element 0 is the most frequent and
@@ -441,16 +464,20 @@ void substitution_decryption_of_unknown(void)
                 continue;
             } else if(cipher_frequency[j] == cipher_frequency[(j-2)] && j>=2) {
                 continue;
+            } else if(cipher_frequency[j] == cipher_frequency[(j-3)] && j>=3) {
+                continue;
             }
             j++;
             i = -1; //set to minus 1 to allow for the increment that happens in the for loop
         }
     }
+    cipher_frequency[26] = '\0'; //setting last element to 0
     j = 0; //resetting a string counter for use in the loop below
-    for(i = 0; j < strlen(cipher_text); i++) { //i.e executes for the entire cipher_text, all letters of the alphabet are examined for each letter of cipher_text
+    for(i = 0; j < count; i++) { //i.e executes for the entire cipher_text, all letters of the alphabet are examined for each letter of cipher_text
         if(cipher_frequency[i] == cipher_text[j]) { //if the letter of the cipher_frequency is the same as the letter in the cipher_text
             cipher_text[j] = letter_frequency[i]; //substitute the cipher_text letter for the letter in the standard alphabet that corresponds to the letter in cipher_key
             i = -1; //resets string counter to 0 once the increment is performed in the for loop
+           // printf("%s\n", cipher_text);
             j++;  /*increments the string counter for message_text, i.e causes the above if statement to examine the next letter in the message. 
                     Only increments when a letter of the message is encrypted*/
         } else if(cipher_text[j]>90 || cipher_text[j]<65) {  //executes if the element of the message is not an uppercase letter
@@ -458,8 +485,11 @@ void substitution_decryption_of_unknown(void)
             i = -1; //resets string counter to 0 once the increment is performed in the for loop
         }
     }
-    printf("%s\n", cipher_text); //prints decrypted message to stdout
-    fprintf(fp, "\n%s\n", cipher_text); //prints decrypted message to file
+    fprintf(fp, "\n");
+    for(i=0; i<count; i++) {   
+        printf("%c", (char)cipher_text[i]); //prints decrypted message to stdout
+        fprintf(fp, "%c", (char)cipher_text[i]); //prints decrypted message to file
+    }
     fclose(fp); //closes file
 }
 
