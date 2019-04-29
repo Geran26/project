@@ -24,14 +24,7 @@ int counting_phrases(char *str, int x, char *word); //Counts how many times a su
 
 int main() 
 {
-    int menu_select; //user-friendly menu selection
-    printf("Please select which function you wish to perform: \n");
-    printf("Enter 1 for rotation encrytion\n");
-    printf("Enter 2 for rotation decryption\n");
-    printf("Enter 3 for substitution encryption\n");
-    printf("Enter 4 for substitution decryption\n");
-    printf("Enter 5 for rotation decryption without a key\n");
-    printf("Enter 6 for substitution decryption without a key\n");
+    int menu_select; // menu selection via stdinInput file
     scanf("%d", &menu_select);
     switch (menu_select) {
         case 1: rotation_encryption(); break; //performs rotation encryption of a known message. Needs a key
@@ -66,8 +59,6 @@ void rotation_encryption(void)
         if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
             count++; //count is incremented to show there is another letter in the string to be inialised below
         } else { //if it is a newline
-            count = count - 1; /*count is incremented an extra time so to get correct number of characters in the 
-                                //first line count needs to be decreased by 1*/
             break; //stop reading the file as we have counted all elements in the first row
         }
     }
@@ -83,8 +74,7 @@ void rotation_encryption(void)
         } else { //when c == newline
             break; //exits once the newline has been reached
         } 
-    }
-    message_text[count - 1] = '\0';
+    }   
     int y; // 'key' value. Amount the message is rotated by
     fscanf(fp, "%d", &y); //reads second line of file for an interger number between 0 and 25
     convert_case(message_text); //converts lowercase to uppercase    
@@ -118,8 +108,6 @@ void rotation_decryption(void)
         if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
             count++; //count is incremented to show there is another letter in the string to be inialised below
         } else { //if it is a newline
-            count = count - 1; /*count is incremented an extra time so to get correct number of characters in the 
-                                first line count needs to be decreased by 1*/
             break; //stop reading the file as we have counted all elements in the first row
         }
     }
@@ -169,8 +157,6 @@ void substitution_encryption(void)
         if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
             count++; //count is incremented to show there is another letter in the string to be inialised below
         } else { //if it is a newline
-            count = count - 1; /*count is incremented an extra time so to get correct number of characters in the 
-                                first line count needs to be decreased by 1*/
             break; //stop reading the file as we have counted all elements in the first row
         }
     }
@@ -244,8 +230,6 @@ void substitution_decryption(void)
         if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
             count++; //count is incremented to show there is another letter in the string to be inialised below
         } else { //if it is a newline
-            count = count - 1; /*count is incremented an extra time so to get correct number of characters in the 
-                                first line count needs to be decreased by 1*/
             break; //stop reading the file as we have counted all elements in the first row
         }
     }
@@ -320,8 +304,6 @@ void rotation_decryption_of_unknown(void)
         if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
             count++; //count is incremented to show there is another letter in the string to be inialised below
         } else { //if it is a newline
-            count = count - 1; /*count is incremented an extra time so to get correct number of characters in the 
-                                // first line count needs to be decreased by 1*/
             break; //stop reading the file as we have counted all elements in the first row
         }
     }
@@ -397,8 +379,6 @@ void substitution_decryption_of_unknown(void)
         if(c != '\n') { //This tests for a new line, this only execute if the file has NOT reached a new line
             count++; //count is incremented to show there is another letter in the string to be inialised below
         } else { //if it is a newline
-            count = count - 1; /*count is incremented an extra time so to get correct number of characters in the 
-                                first line count needs to be decreased by 1*/
             break; //stop reading the file as we have counted all elements in the first row
         }
     }
@@ -418,7 +398,9 @@ void substitution_decryption_of_unknown(void)
     char letter_count[27]; //Used to record the frequency of each letter in the cipher_text
     char ordered_letter_count[27]; //Used to order the above string from largest to smallest without changing it
     char cipher_frequency[27]; //String stores the alphabet that statistically is most likely to be the one used to encrypt
-    char letter_frequency[27] = "ETAOINSHRDLUCMWFGYPBVKJXQZ"; //ordered frequency that letters appear throughout the english language
+    char letter_frequency[27] = "ETAOINSHRDLUCMWFGYPBVKJXQZ"; /*ordered frequency that letters appear throughout the english 
+                                                                language, sourced from 
+                                                                http://practicalcryptography.com/ciphers/simple-substitution-cipher/ */
     i = 0; //resetting string counter for use below
     int j = 0; //String counters throughout bellow code
     for(i = 0; i < 26; i++) { //array initialisation, needed as these arrays will be incremented
